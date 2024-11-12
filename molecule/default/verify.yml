@@ -1,0 +1,15 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Get gitlab-runner service status
+      ansible.builtin.service:
+        name: gitlab-runner
+      register: gitlab_runner_service
+
+    - name: Asserts
+      ansible.builtin.assert:
+        that:
+          gitlab_runner_service

@@ -1,0 +1,30 @@
+---
+extends: default
+
+# ignore-from-file: .gitignore
+ignore: |
+  .devcontainer/
+  .idea/
+
+rules:
+  line-length:
+    max: 120
+  truthy:
+    allowed-values: ['true', 'false', 'yes', 'no']
+    check-keys: true
+  comments:
+    # https://github.com/prettier/prettier/issues/6780
+    min-spaces-from-content: 1
+  # https://github.com/adrienverge/yamllint/issues/384
+  comments-indentation: false
+  document-start: disable
+  # 160 chars was the default used by old E204 rule, but
+  # you can easily change it or disable in your .yamllint file.
+  braces:
+    min-spaces-inside: 0 # yamllint defaults to 0
+    max-spaces-inside: 1 # yamllint defaults to 0
+  # key-duplicates:
+  #   forbid-duplicated-merge-keys: true # not enabled by default
+  octal-values:
+    forbid-implicit-octal: true # yamllint defaults to false
+    forbid-explicit-octal: true # yamllint defaults to false

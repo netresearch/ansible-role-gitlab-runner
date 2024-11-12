@@ -1,0 +1,19 @@
+---
+- name: "Unregistration | Unregister all Runners"
+  ansible.builtin.command: gitlab-runner unregister --all-runners
+  register: output
+  changed_when: "'Unregistering runner from GitLab succeeded' in output.stdout"
+
+- name: "Unregistration | Ensure Runner configuration file is removed"
+  ansible.builtin.file:
+    path: "{{ runner_config_path }}"
+    state: absent
+
+- name: "Unregistration | Unregister instance-level runner"
+  community.general.gitlab_runner:
+    api_url: "{{ gitlab_url }}"
+    api_token: "{{ gitlab_access_token }}"
+    description: "{{ runner_name }} #{{ item }}"
+    state: absent
+  loop: "{{ range(1, runner_count + 1, 1) | list }}"
+  register: runner

@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    runner_run_untagged_builds: false
+  tasks:
+    - name: "Include netresearch.gitlab_runner"
+      ansible.builtin.include_role:
+        name: "netresearch.gitlab_runner"

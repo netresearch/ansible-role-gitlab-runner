@@ -1,0 +1,64 @@
+---
+- name: "Registration | Count registered Runners"
+  ansible.builtin.command: grep -c 'name = ' "{{ runner_config_path }}"
+  register: registered_runners_count
+  ignore_errors: true
+  changed_when: false
+  check_mode: false
+
+- name: "Registration | Unregister all Runners"
+  ansible.builtin.command: gitlab-runner unregister --all-runners
+  when: force_reregistration or
+    runner_count < registered_runners_count.stdout | int
+  register: output
+  changed_when: "'Unregistering runner from GitLab succeeded' in output.stdout"
+
+- name: "Registration | Ensure Runner configuration file is removed"
+  ansible.builtin.file:
+    path: "{{ runner_config_path }}"
+    state: absent
+  when: force_reregistration
+
+- name: "Registration | Check registered Runners"
+  ansible.builtin.command: gitlab-runner list
+  register: registered_runners
+  changed_when: false
+  check_mode: false
+
+- name: "Registration | Create instance-level runner"
+  community.general.gitlab_runner:
+    api_url: "{{ gitlab_url }}"
+    api_token: "{{ gitlab_access_token }}"
+    description: "{{ runner_name }} #{{ item }}"
+    state: present
+    active: "{{ runner_is_paused }}"
+    tag_list: "{{ runner_tags }}"
+    run_untagged: "{{ runner_run_untagged_builds }}"
+    locked: "{{ runner_is_locked }}"
+  loop: "{{ range(1, runner_count + 1, 1) | list }}"
+  when: registered_runners.stderr.find('\n%s %s%s' | format(runner_name, '#', item)) == -1
+  register: runner
+
+- name: "Registration | Register Runner"
+  ansible.builtin.command: >
+    gitlab-runner register
+    --non-interactive
+    --name "{{ runner_name }} #{{ item }}"
+    --url '{{ gitlab_url }}'
+    --token '{{ runner.results[item - 1].runner.token }}'
+    --executor '{{ runner_executor }}'
+    --docker-volumes='{{ runner_docker_volume_mount_daemon }}'
+    --docker-volumes='{{ runner_docker_volume_mount_ssl }}'
+    --env 'COMPOSE_HTTP_TIMEOUT={{ env_compose_http_timeout }}'
+    --env 'DOCKER_DRIVER={{ env_docker_driver }}'
+    --env 'DOCKER_TLS_CERTDIR={{ env_docker_tls_certdir }}'
+    {{ '--docker-image ' + runner_docker_image if runner_executor == 'docker' else '' }}
+    {{ '--docker-privileged ' if runner_executor == 'docker' and runner_docker_privileged else '' }}
+    {{ '--docker-wait-for-services-timeout '
+    + runner_docker_services_timeout | string if runner_executor == 'docker' else '' }}
+  loop: "{{ range(1, runner_count + 1, 1) | list }}"
+  when:
+    - registered_runners.stderr.find('\n%s %s%s' | format(runner_name, '#', item)) == -1
+    - runner.results[item - 1].runner.token is defined
+  register: output
+  changed_when: "'Runner registered successfully' in output.stderr"

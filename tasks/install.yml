@@ -1,0 +1,57 @@
+---
+- name: "Install"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  block:
+    - name: "Install | Install dependencies"
+      ansible.builtin.apt:
+        name: "{{ apt_os_dependencies }}"
+        state: present
+
+    - name: "Install | Install Python dependencies"
+      ansible.builtin.apt:
+        name:
+          - "python3-setuptools"
+          - "python3-pip"
+        state: present
+
+    - name: "Install | Add GitLab Python module"
+      ansible.builtin.pip:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - "python-gitlab"
+        - "python-debian"
+
+    # We have to use `deb822_repository` instead of the deprecated `apt_key`
+    # https://github.com/ansible/ansible/issues/78063
+    - name: "Install | Add GitLab's gpg key"
+      ansible.builtin.deb822_repository:
+        name: "gitlab-runner"
+        types: ["deb", "deb-src"]
+        uris: "{{ gitlab_apt_repository_url }}{{ ansible_distribution | lower }}"
+        suites: "{{ ansible_distribution_release | lower }}"
+        components: "main"
+        signed_by: "{{ gitlab_gpg_key_url }}"
+
+    - name: "Install | Prefer GitLab provided packages using APT pinning"
+      ansible.builtin.template:
+        src: etc/apt/preferences.d/pin-gitlab-runner.pref.j2
+        dest: /etc/apt/preferences.d/pin-gitlab-runner.pref
+        owner: root
+        group: root
+        mode: "0644"
+
+- name: "Install | Refresh package caches"
+  ansible.builtin.package:
+    update_cache: true
+
+- name: "Install | Add GitLab Runner package"
+  ansible.builtin.package:
+    name: "{{ os_pkg_gitlab_runner }}"
+    state: present
+
+- name: "Install | Start and enable service"
+  ansible.builtin.service:
+    name: gitlab-runner
+    enabled: true
+    state: started

@@ -1,0 +1,6 @@
+---
+apt_os_dependencies:
+  - apt-transport-https
+  - curl
+  - debian-archive-keyring
+  - gnupg

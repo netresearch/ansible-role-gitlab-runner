@@ -1,0 +1,36 @@
+---
+os_pkg_gitlab_runner: "gitlab-runner"
+gitlab_gpg_key_url: https://packages.gitlab.com/runner/gitlab-runner/gpgkey
+gitlab_url: "YOUR_GITLAB_URL"
+gitlab_apt_repository_url: https://packages.gitlab.com/runner/gitlab-runner/
+gitlab_access_token: "YOUR_ACCESS_TOKEN"
+
+runner_count: 1
+runner_concurrent: 1
+runner_name: "{{ ansible_hostname }}"
+runner_executor: docker
+runner_is_locked: false
+runner_is_paused: false
+runner_run_untagged_builds: true
+runner_tags:
+runner_metrics_enabled: false
+runner_stop_timeout: 3600
+
+runner_docker_volume_mount_daemon: "/etc/docker/daemon.json:/etc/docker/daemon.json:ro"
+runner_docker_volume_mount_ssl: "/etc/ssl/certs:/etc/ssl/certs:ro"
+runner_docker_image: "docker:stable"
+runner_docker_privileged: false
+runner_docker_services_timeout: 90
+
+runner_user: gitlab-runner
+runner_home: /home/gitlab-runner
+
+force_reregistration: false
+force_unregistration: false
+
+runner_cleanup_is_enabled: true
+runner_config_path: /etc/gitlab-runner/config.toml
+
+env_compose_http_timeout: 360
+env_docker_driver: overlay2
+env_docker_tls_certdir:

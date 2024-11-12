@@ -1,0 +1,67 @@
+---
+dependency:
+  name: galaxy
+
+driver:
+  name: docker
+
+platforms:
+  - name: shell-runner
+    image: geerlingguy/docker-debian12-ansible:latest
+    privileged: true
+    pre_build_image: true
+    cgroupns: host
+    cgroupns_mode: host
+    command: /lib/systemd/systemd
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    groups:
+      - shell
+
+  - name: docker-runner
+    image: geerlingguy/docker-debian12-ansible:latest
+    privileged: true
+    pre_build_image: true
+    cgroupns: host
+    cgroupns_mode: host
+    command: /lib/systemd/systemd
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    groups:
+      - docker
+
+provisioner:
+  name: ansible
+  inventory:
+    group_vars:
+      docker:
+        runner_executor: "docker"
+        runner_tags:
+          - test_docker_runner_please_dont_use_kthxbye
+      shell:
+        runner_executor: "shell"
+        runner_tags:
+          - test_shell_runner_please_dont_use_kthxbye
+
+  options:
+    D: true
+
+verifier:
+  name: ansible
+
+scenario:
+  test_sequence:
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - side_effect
+    - verify
+    - cleanup
+    - destroy
+
+  destroy_sequence:
+    - dependency
+    - destroy

@@ -1,0 +1,15 @@
+---
+- name: "Cleanup | Create a cron job that runs Docker Cache Pruner"
+  ansible.builtin.cron:
+    name: "gitlab-docker-prune"
+    minute: "30"
+    hour: "1"
+    day: "*"
+    month: "*"
+    weekday: "0"
+    user: root
+    job: "/usr/share/gitlab-runner/clear-docker-cache prune-volumes"
+    cron_file: ansible_gitlab-docker-prune
+  when:
+    - runner_cleanup_is_enabled | bool
+    - runner_executor == "docker"

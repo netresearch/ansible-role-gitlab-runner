@@ -1,0 +1,10 @@
+---
+- name: Cleanup
+  hosts: all
+  become: true
+  vars:
+    force_unregistration: true
+  tasks:
+    - name: "Include netresearch.gitlab_runner"
+      ansible.builtin.include_role:
+        name: "netresearch.gitlab_runner"

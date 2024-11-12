@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  role_name: gitlab_runner
+  namespace: netresearch
+  author: it@netresearch.de
+  description: Ansible role that installs and configures GitLab runner.
+  company: Netresearch DTT GmbH
+  license: AGPL-3.0-or-later
+  min_ansible_version: "2.17.1"
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+  galaxy_tags: []
+dependencies: []

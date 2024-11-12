@@ -1,0 +1,28 @@
+---
+- name: "Install | Set OS family dependent variables"
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+  tags: always
+
+- name: "Install | Set OS dependent variables"
+  ansible.builtin.include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution }}.yml"
+      errors: ignore
+  tags: always
+
+- name: "GitLab Runner | Installation"
+  ansible.builtin.include_tasks: install.yml
+
+- name: "GitLab Runner | Registration"
+  ansible.builtin.include_tasks: registration.yml
+
+- name: "GitLab Runner | Configuration"
+  ansible.builtin.include_tasks: configuration.yml
+
+- name: "GitLab Runner | Cleanup"
+  ansible.builtin.include_tasks: cleanup.yml
+
+- name: "GitLab Runner | Unregistration"
+  ansible.builtin.include_tasks: unregistration.yml
+  when: force_unregistration
