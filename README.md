@@ -7,6 +7,7 @@ untested and may not work out of the box with this role.
 
 Currently supported operating systems:
 - Debian 12
+- Ubuntu Server 24.04
 
 ## Requirements
 This role has been tested with the following dependencies:
