@@ -64,6 +64,7 @@ Ansible Collections
   startup.
 - `runner_stop_timeout`: Optional. Timeout in seconds for the service stop
   command after which systemd will just `SIGKILL` the process.
+- `runner_docker_volumes`: Optional. List of volumes to mount into the CI jobs.
 
 - `runner_user`: Optional. User that will be used to run the runner. Only used
   if `runner_executor` is set to `shell`.

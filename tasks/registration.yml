@@ -49,6 +49,7 @@
     --executor '{{ runner_executor }}'
     --docker-volumes='{{ runner_docker_volume_mount_daemon }}'
     --docker-volumes='{{ runner_docker_volume_mount_ssl }}'
+    {{ runner_docker_volumes | default([]) | map('regex_replace', '^(.*)$', '--docker-volumes \\1') | join(' ') }}
     --env 'COMPOSE_HTTP_TIMEOUT={{ env_compose_http_timeout }}'
     --env 'DOCKER_DRIVER={{ env_docker_driver }}'
     --env 'DOCKER_TLS_CERTDIR={{ env_docker_tls_certdir }}'

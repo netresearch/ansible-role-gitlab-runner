@@ -21,6 +21,7 @@ runner_docker_volume_mount_ssl: "/etc/ssl/certs:/etc/ssl/certs:ro"
 runner_docker_image: "docker:stable"
 runner_docker_privileged: false
 runner_docker_services_timeout: 90
+runner_docker_volumes: []
 
 runner_user: gitlab-runner
 runner_home: /home/gitlab-runner
