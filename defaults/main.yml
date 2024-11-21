@@ -15,6 +15,7 @@ runner_run_untagged_builds: true
 runner_tags:
 runner_metrics_enabled: false
 runner_stop_timeout: 3600
+runner_env: {}
 
 runner_docker_volume_mount_daemon: "/etc/docker/daemon.json:/etc/docker/daemon.json:ro"
 runner_docker_volume_mount_ssl: "/etc/ssl/certs:/etc/ssl/certs:ro"

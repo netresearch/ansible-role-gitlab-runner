@@ -52,6 +52,8 @@ Ansible Collections
 - `runner_is_paused`: Optional. If true, runner will not receive any new jobs.
 - `runner_run_untagged_builds`: Optional. Register to run untagged builds.
 - `runner_tags`: Optional. List of tags.
+- `runner_env`: Optional. Dictionary of environment variables available to the
+  CI jobs.
 - `runner_metrics_enabled`: Optional. If true, runner will expose Prometheus
   metrics via embedded HTTP server.
 - `runner_metrics_listen_address`. Optional. `<host>:<port>` address on which

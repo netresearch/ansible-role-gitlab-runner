@@ -53,6 +53,7 @@
     --env 'COMPOSE_HTTP_TIMEOUT={{ env_compose_http_timeout }}'
     --env 'DOCKER_DRIVER={{ env_docker_driver }}'
     --env 'DOCKER_TLS_CERTDIR={{ env_docker_tls_certdir }}'
+    {{ runner_env | default({}) | map('dict2items') | map('first') | map('join', '=') | map('regex_replace', '^(.*)$', '--env \\1') | join(' ') }}
     {{ '--docker-image ' + runner_docker_image if runner_executor == 'docker' else '' }}
     {{ '--docker-privileged ' if runner_executor == 'docker' and runner_docker_privileged else '' }}
     {{ '--docker-wait-for-services-timeout '
